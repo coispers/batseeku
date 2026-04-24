@@ -53,7 +53,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final freelancerProfile = freelancerProfiles.where(
       (profile) => profile.userId == user.id,
     );
-    final selectedProfile = freelancerProfile.isEmpty ? null : freelancerProfile.first;
+    final selectedProfile =
+        freelancerProfile.isEmpty ? null : freelancerProfile.first;
 
     final List<Review> reviews = selectedProfile != null
         ? repository.reviewsForFreelancer(selectedProfile.id)
@@ -109,7 +110,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(user.name, style: Theme.of(context).textTheme.titleMedium),
+                      Text(user.name,
+                          style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 2),
                       Text(user.email),
                       if (user.course != null) Text(user.course!),
@@ -120,8 +122,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             user.isVerified
                                 ? Icons.verified_rounded
                                 : Icons.info_outline_rounded,
-                            color:
-                                user.isVerified ? AppColors.success : AppColors.warning,
+                            color: user.isVerified
+                                ? AppColors.success
+                                : AppColors.warning,
                             size: 18,
                           ),
                           const SizedBox(width: 6),
@@ -215,7 +218,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 subtitle: const Text('Notifications, preferences, privacy'),
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Settings are mocked in MVP.')),
+                    const SnackBar(
+                        content: Text('Settings are mocked in MVP.')),
                   );
                 },
               ),

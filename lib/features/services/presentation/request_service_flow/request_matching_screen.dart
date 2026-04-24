@@ -83,8 +83,8 @@ class _RequestMatchingScreenState extends State<RequestMatchingScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () => Navigator.of(context)
-                                .popUntil((Route<dynamic> route) => route.isFirst),
+                            onPressed: () => Navigator.of(context).popUntil(
+                                (Route<dynamic> route) => route.isFirst),
                             child: const Text('Back to Home'),
                           ),
                         ),

@@ -20,7 +20,8 @@ class MockDataRepository {
   List<FreelancerProfile> get freelancerProfiles =>
       List<FreelancerProfile>.unmodifiable(SeedData.freelancerProfiles);
 
-  List<ErrandTask> get errands => List<ErrandTask>.unmodifiable(SeedData.errands);
+  List<ErrandTask> get errands =>
+      List<ErrandTask>.unmodifiable(SeedData.errands);
 
   List<MessageThread> get messageThreads =>
       List<MessageThread>.unmodifiable(SeedData.messageThreads);

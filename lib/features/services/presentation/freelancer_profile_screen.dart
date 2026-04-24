@@ -170,7 +170,8 @@ class FreelancerProfileScreen extends ConsumerWidget {
                 }
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Sign in as student to request this service.'),
+                    content:
+                        Text('Sign in as student to request this service.'),
                   ),
                 );
               },

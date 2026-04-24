@@ -93,9 +93,8 @@ class _RequestServiceFlowScreenState
       );
     }
 
-    final List<String> serviceTypes = repository.categories
-        .map((category) => category.name)
-        .toList();
+    final List<String> serviceTypes =
+        repository.categories.map((category) => category.name).toList();
 
     if (!serviceTypes.contains(_serviceType)) {
       _serviceType = serviceTypes.first;
@@ -150,7 +149,8 @@ class _RequestServiceFlowScreenState
                   const SizedBox(height: AppSpacing.md),
                   DropdownButtonFormField<String>(
                     value: _serviceType,
-                    decoration: const InputDecoration(labelText: 'Service type'),
+                    decoration:
+                        const InputDecoration(labelText: 'Service type'),
                     items: serviceTypes
                         .map(
                           (String service) => DropdownMenuItem<String>(
@@ -182,7 +182,8 @@ class _RequestServiceFlowScreenState
                       maxLines: 4,
                       decoration: const InputDecoration(
                         labelText: 'Problem details',
-                        hintText: 'Describe your task, context, and expected output.',
+                        hintText:
+                            'Describe your task, context, and expected output.',
                       ),
                       validator: (String? value) {
                         if ((value ?? '').trim().isEmpty) {

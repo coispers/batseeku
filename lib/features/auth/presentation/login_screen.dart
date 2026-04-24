@@ -26,7 +26,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _attemptLogin() async {
     final bool isValid = _formKey.currentState?.validate() ?? false;
-    final String? universityRule = validateUniversityEmail(_emailController.text);
+    final String? universityRule =
+        validateUniversityEmail(_emailController.text);
 
     if (!isValid || universityRule != null) {
       setState(() {});

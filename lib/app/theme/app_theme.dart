@@ -138,7 +138,8 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+          textStyle:
+              textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
       ),
     );

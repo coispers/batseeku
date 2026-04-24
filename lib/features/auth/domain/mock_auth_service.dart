@@ -130,8 +130,7 @@ final authServiceProvider = Provider<MockAuthService>(
   (Ref ref) => MockAuthService(),
 );
 
-final authControllerProvider =
-    StateNotifierProvider<AuthController, AuthState>(
+final authControllerProvider = StateNotifierProvider<AuthController, AuthState>(
   (Ref ref) => AuthController(ref.watch(authServiceProvider)),
 );
 

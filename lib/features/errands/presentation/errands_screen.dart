@@ -101,9 +101,11 @@ class _ErrandsScreenState extends ConsumerState<ErrandsScreen> {
                         id: DateTime.now().microsecondsSinceEpoch.toString(),
                         title: titleController.text.trim(),
                         description: descriptionController.text.trim(),
-                        budget: double.tryParse(budgetController.text.trim()) ?? 120,
+                        budget: double.tryParse(budgetController.text.trim()) ??
+                            120,
                         distanceKm:
-                            double.tryParse(distanceController.text.trim()) ?? 1.0,
+                            double.tryParse(distanceController.text.trim()) ??
+                                1.0,
                         postedBy: auth.user?.name ?? 'Unknown',
                         status: ErrandStatus.open,
                       );
@@ -232,7 +234,8 @@ class _ErrandsScreenState extends ConsumerState<ErrandsScreen> {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(SnackBar(content: Text(action)));
                       },
-                      child: Text(role == Role.freelancer ? 'Accept' : 'Request'),
+                      child:
+                          Text(role == Role.freelancer ? 'Accept' : 'Request'),
                     ),
                   ),
                 ],

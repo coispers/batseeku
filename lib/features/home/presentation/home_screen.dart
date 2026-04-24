@@ -64,7 +64,8 @@ class HomeScreen extends ConsumerWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Available Now', style: Theme.of(context).textTheme.titleMedium),
+            Text('Available Now',
+                style: Theme.of(context).textTheme.titleMedium),
             TextButton(
               onPressed: () => context.go('/app/1'),
               child: const Text('See all'),

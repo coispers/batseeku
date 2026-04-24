@@ -81,7 +81,8 @@ class MainShell extends ConsumerWidget {
             icon: Icon(Icons.chat_bubble_outline),
             label: 'Messages',
           ),
-          NavigationDestination(icon: Icon(Icons.person_outline), label: 'Profile'),
+          NavigationDestination(
+              icon: Icon(Icons.person_outline), label: 'Profile'),
         ],
       ),
     );

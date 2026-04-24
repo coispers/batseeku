@@ -27,7 +27,8 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
     super.initState();
     final repository = ref.read(mockDataRepositoryProvider);
     _messages = List<ChatMessage>.from(
-      repository.getThreadById(widget.threadId)?.messages ?? const <ChatMessage>[],
+      repository.getThreadById(widget.threadId)?.messages ??
+          const <ChatMessage>[],
     );
   }
 
@@ -131,9 +132,12 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                           ),
                         Text(
                           message.text,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: isMine ? Colors.white : AppColors.textPrimary,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: isMine
+                                        ? Colors.white
+                                        : AppColors.textPrimary,
+                                  ),
                         ),
                       ],
                     ),

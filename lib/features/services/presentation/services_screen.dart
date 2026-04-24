@@ -31,9 +31,8 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
         final bool matchesSubject = selectedSubject == 'All' ||
             profile.subject == selectedSubject ||
             profile.skills.any(
-              (String skill) => skill
-                  .toLowerCase()
-                  .contains(selectedSubject.toLowerCase()),
+              (String skill) =>
+                  skill.toLowerCase().contains(selectedSubject.toLowerCase()),
             );
         final bool matchesRating = profile.rating >= minimumRating;
         final bool matchesPrice = profile.hourlyRate <= maximumPrice;
@@ -97,7 +96,8 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     });
                   },
                 ),
-                Text('Maximum price: PHP ${maximumPrice.toStringAsFixed(0)} / hr'),
+                Text(
+                    'Maximum price: PHP ${maximumPrice.toStringAsFixed(0)} / hr'),
                 Slider(
                   value: maximumPrice,
                   min: 150,
