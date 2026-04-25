@@ -4,6 +4,7 @@ import 'package:batseeku/data/mock/mock_repositories.dart';
 import 'package:batseeku/features/auth/domain/mock_auth_service.dart';
 import 'package:batseeku/models/errand_task.dart';
 import 'package:batseeku/models/role.dart';
+import 'package:batseeku/shared/widgets/shared_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -35,6 +36,10 @@ class _ErrandsScreenState extends ConsumerState<ErrandsScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadii.xl)),
+      ),
       builder: (BuildContext context) {
         return Padding(
           padding: EdgeInsets.only(
@@ -50,7 +55,7 @@ class _ErrandsScreenState extends ConsumerState<ErrandsScreen> {
               children: <Widget>[
                 Text(
                   'Post New Errand',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: AppSpacing.md),
                 TextFormField(
@@ -137,113 +142,146 @@ class _ErrandsScreenState extends ConsumerState<ErrandsScreen> {
     final bool canPost = canPostErrands(role);
 
     if (role == Role.guest) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Icon(Icons.lock_outline_rounded, size: 48),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                'Sign in to post or request errands.',
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-            ],
+      return ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          AdaptiveLayout(
+            child: EmptyStateBlock(
+              title: 'Errands are locked in guest mode',
+              message: 'Sign in to post tasks or request help from peers.',
+              icon: Icons.lock_outline_rounded,
+            ),
           ),
-        ),
+        ],
       );
     }
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.md,
-        AppSpacing.lg,
-        AppSpacing.xl,
-      ),
+      padding: EdgeInsets.zero,
       children: <Widget>[
-        Text('Errands', style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          'Post tasks or accept nearby campus errands.',
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: AppColors.textMuted),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: canPost ? _openPostErrandDialog : null,
-            icon: const Icon(Icons.add_rounded),
-            label: const Text('Post Errand'),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        if (errands.isEmpty)
-          const Card(
-            child: Padding(
-              padding: EdgeInsets.all(AppSpacing.lg),
-              child: Text('No errands available.'),
-            ),
-          ),
-        ...errands.map(
-          (task) => Card(
-            margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    task.title,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w800),
+        AdaptiveLayout(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              AppReveal(
+                child: AppSectionHeader(
+                  title: 'Errands',
+                  subtitle: 'Post tasks or accept nearby campus errands.',
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              AppReveal(
+                delay: const Duration(milliseconds: 80),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: AppPrimaryActionButton(
+                    label: 'Post Errand',
+                    icon: Icons.add_rounded,
+                    onPressed: canPost ? _openPostErrandDialog : null,
                   ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(task.description),
-                  const SizedBox(height: AppSpacing.sm),
-                  Row(
-                    children: <Widget>[
-                      Text('PHP ${task.budget.toStringAsFixed(0)}'),
-                      const SizedBox(width: AppSpacing.md),
-                      Text('${task.distanceKm.toStringAsFixed(1)} km away'),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    'Posted by ${task.postedBy}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: AppColors.textMuted),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final String action = role == Role.freelancer
-                            ? 'Errand accepted (mock).'
-                            : 'Request sent (mock).';
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(SnackBar(content: Text(action)));
-                      },
-                      child:
-                          Text(role == Role.freelancer ? 'Accept' : 'Request'),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              if (errands.isEmpty)
+                const EmptyStateBlock(
+                  title: 'No errands available',
+                  message: 'Be the first to post a new campus task.',
+                  icon: Icons.local_shipping_outlined,
+                ),
+              ...errands.map(
+                (task) => AppReveal(
+                  delay: const Duration(milliseconds: 130),
+                  child: AppContentCard(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(
+                                task.title,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.w800),
+                              ),
+                            ),
+                            AppStatusBadge(
+                              label: _statusLabel(task.status),
+                              tone: _statusTone(task.status),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(task.description),
+                        const SizedBox(height: AppSpacing.sm),
+                        Wrap(
+                          spacing: AppSpacing.sm,
+                          runSpacing: AppSpacing.sm,
+                          children: <Widget>[
+                            AppStatusBadge(
+                              label: 'PHP ${task.budget.toStringAsFixed(0)}',
+                              tone: AppStatusTone.info,
+                              icon: Icons.payments_outlined,
+                            ),
+                            AppStatusBadge(
+                              label: '${task.distanceKm.toStringAsFixed(1)} km away',
+                              tone: AppStatusTone.neutral,
+                              icon: Icons.place_outlined,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          'Posted by ${task.postedBy}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: AppPrimaryActionButton(
+                            label: role == Role.freelancer ? 'Accept' : 'Request',
+                            onPressed: () {
+                              final String action = role == Role.freelancer
+                                  ? 'Errand accepted (mock).'
+                                  : 'Request sent (mock).';
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(content: Text(action)));
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ],
     );
+  }
+
+  String _statusLabel(ErrandStatus status) {
+    switch (status) {
+      case ErrandStatus.accepted:
+        return 'Accepted';
+      case ErrandStatus.completed:
+        return 'Completed';
+      case ErrandStatus.open:
+        return 'Open';
+    }
+  }
+
+  AppStatusTone _statusTone(ErrandStatus status) {
+    switch (status) {
+      case ErrandStatus.accepted:
+        return AppStatusTone.info;
+      case ErrandStatus.completed:
+        return AppStatusTone.success;
+      case ErrandStatus.open:
+        return AppStatusTone.warning;
+    }
   }
 }

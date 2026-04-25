@@ -1,6 +1,7 @@
 import 'package:batseeku/app/theme/app_theme.dart';
 import 'package:batseeku/features/auth/domain/mock_auth_service.dart';
 import 'package:batseeku/models/role.dart';
+import 'package:batseeku/shared/widgets/shared_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -66,148 +67,56 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final String? universityError = _emailController.text.isEmpty
         ? null
         : validateUniversityEmail(_emailController.text);
+    final bool isWide = MediaQuery.sizeOf(context).width >= AppBreakpoints.tablet;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Log In'),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+    final Widget introPanel = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        AppReveal(
+          child: AppContentCard(
+            tone: AppCardTone.accent,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Welcome to BatSeekU',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  'Campus gigs, errands, and peer support in one place.',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textSecondary),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                const _FeaturePoint(
+                  icon: Icons.school_rounded,
+                  text: 'Match with freelancers by skills and rating',
+                ),
+                const _FeaturePoint(
+                  icon: Icons.local_shipping_rounded,
+                  text: 'Post and manage campus errands quickly',
+                ),
+                const _FeaturePoint(
+                  icon: Icons.forum_rounded,
+                  text: 'Track chat threads and service progress',
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        AppReveal(
+          delay: const Duration(milliseconds: 80),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                'Welcome to BatSeekU',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                'Use your university account or continue in guest mode.',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: AppColors.textMuted),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(
-                            labelText: 'University Email',
-                            hintText: 'student1@g.batstate-u.edu.ph',
-                          ),
-                          validator: validateUniversityEmail,
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          'Allowed suffix: @g.batstate-u.edu.ph',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(color: AppColors.textMuted),
-                        ),
-                        if (universityError != null) ...<Widget>[
-                          const SizedBox(height: AppSpacing.xs),
-                          Text(
-                            universityError,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(color: Colors.redAccent),
-                          ),
-                        ],
-                        const SizedBox(height: AppSpacing.md),
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Password',
-                          ),
-                          validator: (String? value) {
-                            if ((value ?? '').trim().isEmpty) {
-                              return 'Password is required';
-                            }
-                            if ((value ?? '').trim().length < 6) {
-                              return 'Password must be at least 6 characters';
-                            }
-                            return null;
-                          },
-                        ),
-                        if (authState.error != null) ...<Widget>[
-                          const SizedBox(height: AppSpacing.md),
-                          Text(
-                            authState.error!,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(color: Colors.redAccent),
-                          ),
-                        ],
-                        const SizedBox(height: AppSpacing.lg),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed:
-                                authState.isLoading ? null : _attemptLogin,
-                            child: authState.isLoading
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Text('Log In'),
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Registration is mocked in this MVP.',
-                                  ),
-                                ),
-                              );
-                            },
-                            child: const Text('Register'),
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        SizedBox(
-                          width: double.infinity,
-                          child: TextButton(
-                            onPressed: () {
-                              ref
-                                  .read(authControllerProvider.notifier)
-                                  .enterGuestMode();
-                              context.go('/app/0');
-                            },
-                            child: const Text('Continue as Guest'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                'Quick Fill Accounts',
-                style: Theme.of(context).textTheme.titleMedium,
+              AppSectionHeader(
+                title: 'Quick Fill Accounts',
+                subtitle: 'Use mock credentials for each role in one tap.',
+                compact: true,
               ),
               const SizedBox(height: AppSpacing.sm),
               Wrap(
@@ -240,6 +149,181 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ],
           ),
         ),
+      ],
+    );
+
+    final Widget formPanel = AppReveal(
+      delay: const Duration(milliseconds: 140),
+      child: AppContentCard(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              AppSectionHeader(
+                title: 'Log In',
+                subtitle: 'Use your university account or continue as guest.',
+                compact: true,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'University Email',
+                  hintText: 'student1@g.batstate-u.edu.ph',
+                ),
+                validator: validateUniversityEmail,
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                'Allowed suffix: @g.batstate-u.edu.ph',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              if (universityError != null) ...<Widget>[
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  universityError,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: AppColors.danger),
+                ),
+              ],
+              const SizedBox(height: AppSpacing.md),
+              TextFormField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                ),
+                validator: (String? value) {
+                  if ((value ?? '').trim().isEmpty) {
+                    return 'Password is required';
+                  }
+                  if ((value ?? '').trim().length < 6) {
+                    return 'Password must be at least 6 characters';
+                  }
+                  return null;
+                },
+              ),
+              if (authState.error != null) ...<Widget>[
+                const SizedBox(height: AppSpacing.md),
+                AppStatusBadge(
+                  label: authState.error!,
+                  tone: AppStatusTone.danger,
+                  icon: Icons.error_outline_rounded,
+                ),
+              ],
+              const SizedBox(height: AppSpacing.lg),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: authState.isLoading ? null : _attemptLogin,
+                  child: authState.isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text('Log In'),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Registration is mocked in this MVP.'),
+                      ),
+                    );
+                  },
+                  child: const Text('Register'),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () {
+                    ref.read(authControllerProvider.notifier).enterGuestMode();
+                    context.go('/app/0');
+                  },
+                  child: const Text('Continue as Guest'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Log In'),
+      ),
+      body: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            AdaptiveLayout(
+              child: isWide
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(child: introPanel),
+                        const SizedBox(width: AppSpacing.lg),
+                        Expanded(child: formPanel),
+                      ],
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        introPanel,
+                        const SizedBox(height: AppSpacing.lg),
+                        formPanel,
+                      ],
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FeaturePoint extends StatelessWidget {
+  const _FeaturePoint({
+    required this.icon,
+    required this.text,
+  });
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Row(
+        children: <Widget>[
+          Icon(icon, size: AppIconSize.sm, color: AppColors.maroon),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              text,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -257,10 +341,11 @@ class _QuickFillChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ActionChip(
+      avatar: const Icon(Icons.auto_awesome_rounded, size: AppIconSize.xs),
       label: Text(label),
       onPressed: onTap,
-      backgroundColor: AppColors.maroonSoft,
-      side: const BorderSide(color: AppColors.line),
+      backgroundColor: AppColors.surface,
+      side: const BorderSide(color: AppColors.lineStrong),
     );
   }
 }

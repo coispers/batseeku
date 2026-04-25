@@ -3,6 +3,7 @@ import 'package:batseeku/app/theme/app_theme.dart';
 import 'package:batseeku/data/mock/mock_repositories.dart';
 import 'package:batseeku/features/auth/domain/mock_auth_service.dart';
 import 'package:batseeku/models/message_thread.dart';
+import 'package:batseeku/shared/widgets/shared_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -15,31 +16,17 @@ class MessagesScreen extends ConsumerWidget {
     final role = ref.watch(currentRoleProvider);
 
     if (!canUseMessages(role)) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Icon(Icons.lock_outline_rounded, size: 48),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                'Messages are unavailable for this role.',
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                'Students and freelancers can access chat threads.',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: AppColors.textMuted),
-                textAlign: TextAlign.center,
-              ),
-            ],
+      return ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          AdaptiveLayout(
+            child: EmptyStateBlock(
+              title: 'Messages are unavailable for this role',
+              message: 'Students and freelancers can access chat threads.',
+              icon: Icons.lock_outline_rounded,
+            ),
           ),
-        ),
+        ],
       );
     }
 
@@ -47,46 +34,41 @@ class MessagesScreen extends ConsumerWidget {
     final List<MessageThread> threads = repository.messageThreads;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.md,
-        AppSpacing.lg,
-        AppSpacing.xl,
-      ),
+      padding: EdgeInsets.zero,
       children: <Widget>[
-        Text(
-          'Messages',
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          'Track your active and completed conversations.',
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: AppColors.textMuted),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        if (threads.isEmpty)
-          const Card(
-            child: Padding(
-              padding: EdgeInsets.all(AppSpacing.lg),
-              child: Text('No threads yet.'),
-            ),
-          ),
-        ...threads.map(
-          (MessageThread thread) => Card(
-            margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: AppColors.maroonSoft,
-                child: Text(thread.participants.first.substring(0, 1)),
+        AdaptiveLayout(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              AppReveal(
+                child: const AppSectionHeader(
+                  title: 'Messages',
+                  subtitle: 'Track your active and completed conversations.',
+                ),
               ),
-              title: Text(thread.participants.join(' • ')),
-              subtitle: Text(thread.lastMessage),
-              trailing: _StatusPill(status: thread.status),
-              onTap: () => context.push('/messages/${thread.id}'),
-            ),
+              const SizedBox(height: AppSpacing.md),
+              if (threads.isEmpty)
+                const EmptyStateBlock(
+                  title: 'No threads yet',
+                  message: 'Conversations will appear here after a service request starts.',
+                ),
+              ...threads.map(
+                (MessageThread thread) => AppReveal(
+                  delay: const Duration(milliseconds: 90),
+                  child: AppContentCard(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    onTap: () => context.push('/messages/${thread.id}'),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: AppAvatar(label: thread.participants.first),
+                      title: Text(thread.participants.join(' • ')),
+                      subtitle: Text(thread.lastMessage),
+                      trailing: _StatusPill(status: thread.status),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -102,20 +84,10 @@ class _StatusPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool active = status == MessageThreadStatus.active;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: active ? const Color(0xFFDCFCE7) : const Color(0xFFE2E8F0),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        active ? 'Active' : 'Completed',
-        style: TextStyle(
-          color: active ? AppColors.success : AppColors.textMuted,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
+    return AppStatusBadge(
+      label: active ? 'Active' : 'Completed',
+      tone: active ? AppStatusTone.success : AppStatusTone.neutral,
+      icon: active ? Icons.bolt_rounded : Icons.check_circle_outline_rounded,
     );
   }
 }
