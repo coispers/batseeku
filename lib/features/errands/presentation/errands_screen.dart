@@ -226,7 +226,8 @@ class _ErrandsScreenState extends ConsumerState<ErrandsScreen> {
                               icon: Icons.payments_outlined,
                             ),
                             AppStatusBadge(
-                              label: '${task.distanceKm.toStringAsFixed(1)} km away',
+                              label:
+                                  '${task.distanceKm.toStringAsFixed(1)} km away',
                               tone: AppStatusTone.neutral,
                               icon: Icons.place_outlined,
                             ),
@@ -241,13 +242,14 @@ class _ErrandsScreenState extends ConsumerState<ErrandsScreen> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: AppPrimaryActionButton(
-                            label: role == Role.freelancer ? 'Accept' : 'Request',
+                            label:
+                                role == Role.freelancer ? 'Accept' : 'Request',
                             onPressed: () {
                               final String action = role == Role.freelancer
                                   ? 'Errand accepted (mock).'
                                   : 'Request sent (mock).';
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(content: Text(action)));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(action)));
                             },
                           ),
                         ),

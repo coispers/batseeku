@@ -26,7 +26,10 @@ class LaunchScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(AppRadii.xl),
                         gradient: const LinearGradient(
-                          colors: <Color>[AppColors.maroon, AppColors.maroonDark],
+                          colors: <Color>[
+                            AppColors.maroon,
+                            AppColors.maroonDark
+                          ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -70,9 +73,12 @@ class LaunchScreen extends StatelessWidget {
                             style: textTheme.titleLarge,
                           ),
                           const SizedBox(height: AppSpacing.md),
-                          const _FlowPoint(text: 'Find tutors and campus helpers'),
-                          const _FlowPoint(text: 'Post service requests and errands'),
-                          const _FlowPoint(text: 'Track conversations and reputation'),
+                          const _FlowPoint(
+                              text: 'Find tutors and campus helpers'),
+                          const _FlowPoint(
+                              text: 'Post service requests and errands'),
+                          const _FlowPoint(
+                              text: 'Track conversations and reputation'),
                         ],
                       ),
                     ),

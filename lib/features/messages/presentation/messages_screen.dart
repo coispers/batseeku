@@ -50,7 +50,8 @@ class MessagesScreen extends ConsumerWidget {
               if (threads.isEmpty)
                 const EmptyStateBlock(
                   title: 'No threads yet',
-                  message: 'Conversations will appear here after a service request starts.',
+                  message:
+                      'Conversations will appear here after a service request starts.',
                 ),
               ...threads.map(
                 (MessageThread thread) => AppReveal(

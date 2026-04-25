@@ -67,7 +67,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final String? universityError = _emailController.text.isEmpty
         ? null
         : validateUniversityEmail(_emailController.text);
-    final bool isWide = MediaQuery.sizeOf(context).width >= AppBreakpoints.tablet;
+    final bool isWide =
+        MediaQuery.sizeOf(context).width >= AppBreakpoints.tablet;
 
     final Widget introPanel = Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -129,7 +129,8 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
               if (results.isEmpty)
                 const EmptyStateBlock(
                   title: 'No matches with current filters',
-                  message: 'Adjust subject, rating, or price to see more results.',
+                  message:
+                      'Adjust subject, rating, or price to see more results.',
                   icon: Icons.filter_alt_off_rounded,
                 ),
               ...results.map(
@@ -137,7 +138,8 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                   delay: const Duration(milliseconds: 160),
                   child: AppContentCard(
                     margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    onTap: () => context.push('/services/freelancer/${profile.id}'),
+                    onTap: () =>
+                        context.push('/services/freelancer/${profile.id}'),
                     child: ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: AppAvatar(label: profile.displayName),

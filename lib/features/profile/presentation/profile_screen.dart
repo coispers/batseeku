@@ -31,7 +31,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           AdaptiveLayout(
             child: EmptyStateBlock(
               title: 'Sign in to view your profile',
-              message: 'Your account info, reviews, and settings are available after login.',
+              message:
+                  'Your account info, reviews, and settings are available after login.',
               icon: Icons.person_outline,
               action: ElevatedButton(
                 onPressed: () => context.go('/login'),
@@ -103,7 +104,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             if (user.course != null) Text(user.course!),
                             const SizedBox(height: AppSpacing.sm),
                             AppStatusBadge(
-                              label: user.isVerified ? 'Verified' : 'Unverified',
+                              label:
+                                  user.isVerified ? 'Verified' : 'Unverified',
                               tone: user.isVerified
                                   ? AppStatusTone.success
                                   : AppStatusTone.warning,
@@ -142,8 +144,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       value: freelancerMode,
                       contentPadding: EdgeInsets.zero,
                       title: const Text('Freelancer Mode'),
-                      subtitle:
-                          const Text('Manage profile visibility and active jobs'),
+                      subtitle: const Text(
+                          'Manage profile visibility and active jobs'),
                       onChanged: (bool value) {
                         setState(() {
                           freelancerMode = value;

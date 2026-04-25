@@ -51,7 +51,8 @@ class AdminDashboardScreen extends ConsumerWidget {
                 AppReveal(
                   child: const AppSectionHeader(
                     title: 'Platform Metrics',
-                    subtitle: 'Snapshot of adoption, requests, and risk signals.',
+                    subtitle:
+                        'Snapshot of adoption, requests, and risk signals.',
                   ),
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -105,7 +106,8 @@ class AdminDashboardScreen extends ConsumerWidget {
                   delay: const Duration(milliseconds: 140),
                   child: const AppSectionHeader(
                     title: 'User Status',
-                    subtitle: 'Verification and moderation overview by account.',
+                    subtitle:
+                        'Verification and moderation overview by account.',
                     compact: true,
                   ),
                 ),

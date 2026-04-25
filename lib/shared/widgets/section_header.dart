@@ -28,8 +28,10 @@ class AppSectionHeader extends StatelessWidget {
               child: Text(
                 title,
                 style: compact
-                    ? textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)
-                    : textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                    ? textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w800)
+                    : textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.w800),
               ),
             ),
             if (action != null) action!,

@@ -88,7 +88,8 @@ class HomeScreen extends ConsumerWidget {
                   children: <Widget>[
                     AppSectionHeader(
                       title: 'Available Now',
-                      subtitle: 'Freelancers currently open for quick requests.',
+                      subtitle:
+                          'Freelancers currently open for quick requests.',
                       action: TextButton(
                         onPressed: () => context.go('/app/1'),
                         child: const Text('See all'),

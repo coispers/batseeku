@@ -186,8 +186,8 @@ class AppTheme {
             size: AppIconSize.md,
           );
         }),
-        labelTextStyle:
-            WidgetStateProperty.resolveWith<TextStyle>((Set<WidgetState> states) {
+        labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>(
+            (Set<WidgetState> states) {
           if (states.contains(WidgetState.selected)) {
             return textTheme.bodySmall!.copyWith(
               fontWeight: FontWeight.w800,
@@ -264,7 +264,8 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadii.md),
           ),
-          textStyle: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+          textStyle:
+              textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
       ),
       switchTheme: SwitchThemeData(
