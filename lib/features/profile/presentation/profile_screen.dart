@@ -18,6 +18,66 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool freelancerMode = true;
 
+  Future<void> _confirmAndSwitchRole({
+    required Role currentRole,
+  }) async {
+    final bool switchToFreelancer = currentRole == Role.student;
+    final String targetRoleLabel =
+        switchToFreelancer ? 'Freelancer' : 'Customer';
+
+    final bool confirmed = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext dialogContext) {
+            return AlertDialog(
+              title: const Text('Switch role?'),
+              content: Text(
+                'Are you sure you want to switch to $targetRoleLabel mode?',
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(true),
+                  child: const Text('Confirm'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+
+    if (!confirmed || !mounted) {
+      return;
+    }
+
+    final bool switched = ref
+        .read(authControllerProvider.notifier)
+        .switchCustomerFreelancerRole();
+
+    if (!mounted) {
+      return;
+    }
+
+    if (!switched) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Role switch is only available for customer/freelancer accounts.'),
+        ),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Switched to $targetRoleLabel mode.'),
+      ),
+    );
+    context.go('/app/0');
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
@@ -73,6 +133,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ];
 
     final bool isFreelancer = role == Role.freelancer;
+    final bool canSwitchRole = role == Role.student || role == Role.freelancer;
     final double estimatedEarnings = selectedProfile == null
         ? 0
         : selectedProfile.completedJobs * selectedProfile.hourlyRate;
@@ -136,6 +197,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
+              if (canSwitchRole)
+                AppReveal(
+                  delay: const Duration(milliseconds: 90),
+                  child: AppContentCard(
+                    tone:
+                        isFreelancer ? AppCardTone.success : AppCardTone.accent,
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.swap_horiz_rounded),
+                      title: Text(
+                        isFreelancer
+                            ? 'Switch to Customer'
+                            : 'Switch to Freelancer',
+                      ),
+                      subtitle: Text(
+                        isFreelancer
+                            ? 'Use customer view to post and track requests.'
+                            : 'Use freelancer view to accept jobs and manage demand.',
+                      ),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () => _confirmAndSwitchRole(currentRole: role),
+                    ),
+                  ),
+                ),
+              if (canSwitchRole) const SizedBox(height: AppSpacing.md),
               if (isFreelancer) ...<Widget>[
                 AppReveal(
                   delay: const Duration(milliseconds: 100),

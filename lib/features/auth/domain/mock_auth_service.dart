@@ -118,6 +118,26 @@ class AuthController extends StateNotifier<AuthState> {
   void logout() {
     state = const AuthState();
   }
+
+  bool switchCustomerFreelancerRole() {
+    final AppUser? currentUser = state.user;
+    if (currentUser == null) {
+      return false;
+    }
+
+    final Role currentRole = currentUser.role;
+    if (currentRole != Role.student && currentRole != Role.freelancer) {
+      return false;
+    }
+
+    final Role nextRole =
+        currentRole == Role.student ? Role.freelancer : Role.student;
+    state = state.copyWith(
+      user: currentUser.copyWith(role: nextRole),
+      clearError: true,
+    );
+    return true;
+  }
 }
 
 class AuthException implements Exception {
