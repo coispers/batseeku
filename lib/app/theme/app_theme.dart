@@ -87,7 +87,7 @@ class AppTheme {
   static ThemeData light() {
     final TextTheme textTheme = _buildTextTheme();
 
-    final ColorScheme scheme = const ColorScheme(
+    const ColorScheme scheme = ColorScheme(
       brightness: Brightness.light,
       primary: AppColors.maroon,
       onPrimary: Colors.white,
@@ -113,7 +113,7 @@ class AppTheme {
         toolbarHeight: 68,
         centerTitle: false,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surface,
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -213,7 +213,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppRadii.pill),
         ),
       ),
-      sliderTheme: SliderThemeData(
+      sliderTheme: const SliderThemeData(
         activeTrackColor: AppColors.maroon,
         inactiveTrackColor: AppColors.maroonSoft,
         thumbColor: AppColors.maroon,
@@ -271,7 +271,7 @@ class AppTheme {
       switchTheme: SwitchThemeData(
         trackColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
           if (states.contains(WidgetState.selected)) {
-            return AppColors.maroon.withOpacity(0.44);
+            return AppColors.maroon.withValues(alpha: 0.44);
           }
           return AppColors.backgroundAlt;
         }),

@@ -114,7 +114,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              AppSectionHeader(
+              const AppSectionHeader(
                 title: 'Quick Fill Accounts',
                 subtitle: 'Use mock credentials for each role in one tap.',
                 compact: true,
@@ -161,7 +161,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              AppSectionHeader(
+              const AppSectionHeader(
                 title: 'Log In',
                 subtitle: 'Use your university account or continue as guest.',
                 compact: true,

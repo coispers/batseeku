@@ -18,7 +18,7 @@ class MessagesScreen extends ConsumerWidget {
     if (!canUseMessages(role)) {
       return ListView(
         padding: EdgeInsets.zero,
-        children: <Widget>[
+        children: const <Widget>[
           AdaptiveLayout(
             child: EmptyStateBlock(
               title: 'Messages are unavailable for this role',
@@ -40,13 +40,7 @@ class MessagesScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              AppReveal(
-                child: const AppSectionHeader(
-                  title: 'Messages',
-                  subtitle: 'Track your active and completed conversations.',
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
+
               if (threads.isEmpty)
                 const EmptyStateBlock(
                   title: 'No threads yet',

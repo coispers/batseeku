@@ -144,7 +144,7 @@ class _ErrandsScreenState extends ConsumerState<ErrandsScreen> {
     if (role == Role.guest) {
       return ListView(
         padding: EdgeInsets.zero,
-        children: <Widget>[
+        children: const <Widget>[
           AdaptiveLayout(
             child: EmptyStateBlock(
               title: 'Errands are locked in guest mode',
@@ -163,13 +163,7 @@ class _ErrandsScreenState extends ConsumerState<ErrandsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              AppReveal(
-                child: AppSectionHeader(
-                  title: 'Errands',
-                  subtitle: 'Post tasks or accept nearby campus errands.',
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
+
               AppReveal(
                 delay: const Duration(milliseconds: 80),
                 child: SizedBox(

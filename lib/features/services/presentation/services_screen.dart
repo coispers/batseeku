@@ -48,14 +48,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              AppReveal(
-                child: AppSectionHeader(
-                  title: 'Services',
-                  subtitle:
-                      'Browse freelancers by subject, rating, and hourly rate.',
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
+
               AppReveal(
                 delay: const Duration(milliseconds: 70),
                 child: AppContentCard(

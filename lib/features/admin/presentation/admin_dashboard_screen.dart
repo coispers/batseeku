@@ -48,8 +48,8 @@ class AdminDashboardScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                AppReveal(
-                  child: const AppSectionHeader(
+                const AppReveal(
+                  child: AppSectionHeader(
                     title: 'Platform Metrics',
                     subtitle:
                         'Snapshot of adoption, requests, and risk signals.',
@@ -102,9 +102,9 @@ class AdminDashboardScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                AppReveal(
-                  delay: const Duration(milliseconds: 140),
-                  child: const AppSectionHeader(
+                const AppReveal(
+                  delay: Duration(milliseconds: 140),
+                  child: AppSectionHeader(
                     title: 'User Status',
                     subtitle:
                         'Verification and moderation overview by account.',

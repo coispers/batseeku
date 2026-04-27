@@ -54,7 +54,7 @@ class LaunchScreen extends StatelessWidget {
                           Text(
                             'Campus services and student-to-student support in one app.',
                             style: textTheme.bodyLarge?.copyWith(
-                              color: Colors.white.withOpacity(0.94),
+                              color: Colors.white.withValues(alpha: 0.94),
                             ),
                           ),
                         ],

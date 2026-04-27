@@ -176,9 +176,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 const SizedBox(height: AppSpacing.md),
               ],
-              AppReveal(
-                delay: const Duration(milliseconds: 180),
-                child: const AppSectionHeader(
+              const AppReveal(
+                delay: Duration(milliseconds: 180),
+                child: AppSectionHeader(
                   title: 'Reviews',
                   subtitle: 'Recent feedback from people you worked with.',
                   compact: true,

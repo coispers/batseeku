@@ -1,13 +1,11 @@
-import 'package:batseeku/app/role_capabilities.dart';
 import 'package:batseeku/app/theme/app_theme.dart';
 import 'package:batseeku/data/mock/mock_repositories.dart';
-import 'package:batseeku/features/auth/domain/mock_auth_service.dart';
-import 'package:batseeku/models/role.dart';
+import 'package:batseeku/shared/widgets/shared_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class FreelancerProfileScreen extends ConsumerWidget {
+class FreelancerProfileScreen extends ConsumerStatefulWidget {
   const FreelancerProfileScreen({
     super.key,
     required this.freelancerId,
@@ -16,169 +14,376 @@ class FreelancerProfileScreen extends ConsumerWidget {
   final String freelancerId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final repository = ref.watch(mockDataRepositoryProvider);
-    final role = ref.watch(currentRoleProvider);
+  ConsumerState<FreelancerProfileScreen> createState() => _FreelancerProfileScreenState();
+}
 
-    final profile = repository.getFreelancerById(freelancerId);
-    if (profile == null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Freelancer Profile')),
-        body: const Center(child: Text('Freelancer not found.')),
-      );
-    }
+class _FreelancerProfileScreenState extends ConsumerState<FreelancerProfileScreen> {
+  String _selectedPackage = 'Basic';
 
-    final reviews = repository.reviewsForFreelancer(profile.id);
-
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Freelancer Profile')),
-      body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        children: <Widget>[
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      CircleAvatar(
-                        radius: 28,
-                        backgroundColor: AppColors.maroonSoft,
-                        child: Text(
-                          profile.displayName.substring(0, 1),
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.maroon,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              profile.displayName,
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            Text(profile.subject),
-                            const SizedBox(height: AppSpacing.xs),
-                            const Row(
-                              children: <Widget>[
-                                Icon(
-                                  Icons.verified_rounded,
-                                  size: 16,
-                                  color: AppColors.success,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  'Verified BatStateU Account',
-                                  style: TextStyle(
-                                    color: AppColors.success,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+      backgroundColor: AppColors.surface,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 220.0,
+            pinned: true,
+            iconTheme: const IconThemeData(color: Colors.white),
+            leading: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CircleAvatar(
+                backgroundColor: Colors.black.withValues(alpha: 0.3),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+                  onPressed: () => context.pop(),
+                ),
+              ),
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  backgroundColor: Colors.black.withValues(alpha: 0.3),
+                  child: IconButton(
+                    icon: const Icon(Icons.favorite_border, color: Colors.white, size: 20),
+                    onPressed: () {},
                   ),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(profile.bio),
-                  const SizedBox(height: AppSpacing.sm),
-                  Row(
-                    children: <Widget>[
-                      const Icon(Icons.star_rounded, color: Colors.amber),
-                      const SizedBox(width: 4),
-                      Text('${profile.rating.toStringAsFixed(1)} rating'),
-                      const Spacer(),
-                      Text(
-                        'PHP ${profile.hourlyRate.toStringAsFixed(0)} / hr',
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ],
+                ),
+              ),
+            ],
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.network(
+                    'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=600&auto=format&fit=crop', // programming setup
+                    fit: BoxFit.cover,
                   ),
-                  if (profile.gwa != null) ...<Widget>[
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      'Optional GWA: ${profile.gwa!.toStringAsFixed(2)}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: AppColors.textMuted),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.black.withValues(alpha: 0.6), Colors.transparent],
+                        stops: const [0.0, 0.4],
+                      ),
                     ),
-                  ],
+                  ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.md),
-          Text('Skills', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: AppSpacing.sm),
-          Wrap(
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm,
-            children: profile.skills
-                .map((skill) => Chip(label: Text(skill)))
-                .toList(),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text('Portfolio', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: AppSpacing.sm),
-          ...profile.portfolioSamples.map(
-            (sample) => Card(
-              margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: ListTile(title: Text(sample)),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text('Reviews', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: AppSpacing.sm),
-          ...reviews.map(
-            (review) => Card(
-              margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: ListTile(
-                title: Text(review.reviewerName),
-                subtitle: Text(review.comment),
-                trailing: Text('${review.rating.toStringAsFixed(1)} ★'),
+          SliverToBoxAdapter(
+            child: Transform.translate(
+              offset: const Offset(0, -20),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+                child: _buildDetailsContent(context),
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.md),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                if (canRequestService(role)) {
-                  context.push('/services/request/$freelancerId');
-                  return;
-                }
-                if (role == Role.freelancer) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Freelancers accept requests from incoming queues.',
-                      ),
+        ],
+      ),
+      bottomNavigationBar: _buildBottomBar(context),
+    );
+  }
+
+  Widget _buildDetailsContent(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Python Assignment Help',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 26,
+                  height: 1.2,
+                ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            children: [
+              const Icon(Icons.star_rounded, color: Colors.amber, size: 20),
+              const SizedBox(width: 4),
+              Text(
+                '4.9',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.textPrimary,
                     ),
-                  );
-                  return;
-                }
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content:
-                        Text('Sign in as student to request this service.'),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '128 reviews',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textMuted,
+                    ),
+              ),
+              const SizedBox(width: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFF3344), // vibrant red
+                  borderRadius: BorderRadius.circular(AppRadii.pill),
+                ),
+                child: const Text(
+                  'Top Rated',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
                   ),
-                );
-              },
-              child: const Text('Request Service'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceMuted,
+              borderRadius: BorderRadius.circular(AppRadii.lg),
+            ),
+            child: Row(
+              children: [
+                const AppAvatar(label: 'Marcus T.', size: 48), // Assuming fallback handles Marcus T.
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Marcus T.',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 16),
+                      ),
+                      Text(
+                        'CS Student - 3rd Year',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {},
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFFFF3344),
+                    textStyle: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  child: const Text('View Profile'),
+                )
+              ],
             ),
           ),
+          const SizedBox(height: AppSpacing.xl),
+          Text(
+            'About this Service',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 18),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            'Get expert help with your Python assignments from a fellow CS student. I provide clear explanations, debugging support, and clean, well-commented code tailored to your coursework requirements.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textMuted,
+                  height: 1.5,
+                ),
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          Text(
+            'What\'s Included',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 18),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          _buildFeatureRow(context, '1 Revision'),
+          _buildFeatureRow(context, 'Delivery in 24hrs'),
+          _buildFeatureRow(context, 'Source Code Included'),
+          const SizedBox(height: AppSpacing.xl),
+          Text(
+            'Select Package',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 18),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Row(
+            children: [
+              Expanded(
+                child: _PackageCard(
+                  title: 'BASIC',
+                  price: 5,
+                  details: '1 task - 24hr delivery',
+                  isSelected: _selectedPackage == 'Basic',
+                  onTap: () => setState(() => _selectedPackage = 'Basic'),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: _PackageCard(
+                  title: 'STANDARD',
+                  price: 12,
+                  details: '3 tasks - 12hr delivery',
+                  isSelected: _selectedPackage == 'Standard',
+                  onTap: () => setState(() => _selectedPackage = 'Standard'),
+                ),
+              ),
+            ],
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureRow(BuildContext context, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFEBED),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.check, size: 14, color: Color(0xFFFF3344)),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Text(
+            text,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomBar(BuildContext context) {
+    final double totalPrice = _selectedPackage == 'Basic' ? 5.00 : 12.00;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.line)),
+      ),
+      child: SafeArea(
+        child: Row(
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Total',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textMuted),
+                ),
+                Text(
+                  '\$${totalPrice.toStringAsFixed(2)}',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: const Color(0xFFFF3344),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 22,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(width: AppSpacing.xl),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  context.push('/services/request/${widget.freelancerId}');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFF3344),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadii.md),
+                  ),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Request This Service', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                    SizedBox(width: 8),
+                    Icon(Icons.arrow_forward, size: 18),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PackageCard extends StatelessWidget {
+  const _PackageCard({
+    required this.title,
+    required this.price,
+    required this.details,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final String title;
+  final int price;
+  final String details;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFFF3344) : AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadii.md),
+          border: Border.all(
+            color: isSelected ? const Color(0xFFFF3344) : const Color(0xFFFFD6D9), // very faint red border for unselected
+            width: 1.5,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: isSelected ? Colors.white : const Color(0xFFFF3344),
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+                if (isSelected) const Icon(Icons.check_circle_outline, color: Colors.white, size: 16),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              '\$$price',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: isSelected ? Colors.white : const Color(0xFFFF3344),
+                    fontWeight: FontWeight.w900,
+                    fontSize: 24,
+                  ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              details,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: isSelected ? Colors.white : AppColors.textMuted,
+                  ),
+            ),
+          ],
+        ),
       ),
     );
   }
