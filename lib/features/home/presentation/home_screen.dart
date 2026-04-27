@@ -86,24 +86,23 @@ class HomeScreen extends ConsumerWidget {
                           AppStatusBadge(
                             label: isFreelancer
                                 ? 'Mode: Freelancer'
-                              : isCustomer
-                                ? 'Mode: Customer'
-                                : 'Mode: Guest',
+                                : isCustomer
+                                    ? 'Mode: Customer'
+                                    : 'Mode: Guest',
                             tone: isFreelancer
                                 ? AppStatusTone.success
-                              : isCustomer
-                                ? AppStatusTone.accent
-                                : AppStatusTone.neutral,
+                                : isCustomer
+                                    ? AppStatusTone.accent
+                                    : AppStatusTone.neutral,
                             icon: isFreelancer
                                 ? Icons.bolt_rounded
-                              : isCustomer
-                                ? Icons.shopping_bag_rounded
-                                : Icons.visibility_outlined,
+                                : isCustomer
+                                    ? Icons.shopping_bag_rounded
+                                    : Icons.visibility_outlined,
                           ),
                           if (isFreelancer && profile != null)
                             AppStatusBadge(
-                              label:
-                                  '${profile.completedJobs} jobs completed',
+                              label: '${profile.completedJobs} jobs completed',
                               tone: AppStatusTone.info,
                               icon: Icons.check_circle_outline_rounded,
                             )
@@ -165,7 +164,9 @@ class HomeScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     AppSectionHeader(
-                      title: isFreelancer ? 'High-Demand Categories' : 'Categories',
+                      title: isFreelancer
+                          ? 'High-Demand Categories'
+                          : 'Categories',
                       subtitle: isFreelancer
                           ? 'Focus areas students are actively browsing.'
                           : 'Jump directly to the kind of help you need.',
@@ -192,12 +193,15 @@ class HomeScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     AppSectionHeader(
-                      title: isFreelancer ? 'Open Errands Near You' : 'Available Now',
+                      title: isFreelancer
+                          ? 'Open Errands Near You'
+                          : 'Available Now',
                       subtitle: isFreelancer
                           ? 'New tasks you can accept immediately.'
                           : 'Freelancers currently open for quick requests.',
                       action: TextButton(
-                        onPressed: () => context.go(isFreelancer ? '/app/2' : '/app/1'),
+                        onPressed: () =>
+                            context.go(isFreelancer ? '/app/2' : '/app/1'),
                         child: Text(isFreelancer ? 'Open board' : 'See all'),
                       ),
                       compact: true,
@@ -217,32 +221,34 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     if (isFreelancer)
                       ...openErrands.take(4).map(
-                        (task) => AppContentCard(
-                          margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                          onTap: () => context.go('/app/2'),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: const Icon(
-                              Icons.local_shipping_outlined,
-                              color: AppColors.textSecondary,
+                            (task) => AppContentCard(
+                              margin:
+                                  const EdgeInsets.only(bottom: AppSpacing.sm),
+                              onTap: () => context.go('/app/2'),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                leading: const Icon(
+                                  Icons.local_shipping_outlined,
+                                  color: AppColors.textSecondary,
+                                ),
+                                title: Text(task.title),
+                                subtitle: Text(
+                                  '${task.postedBy} • ${task.distanceKm.toStringAsFixed(1)} km',
+                                ),
+                                trailing: AppStatusBadge(
+                                  label:
+                                      'PHP ${task.budget.toStringAsFixed(0)}',
+                                  tone: AppStatusTone.warning,
+                                ),
+                              ),
                             ),
-                            title: Text(task.title),
-                            subtitle: Text(
-                              '${task.postedBy} • ${task.distanceKm.toStringAsFixed(1)} km',
-                            ),
-                            trailing: AppStatusBadge(
-                              label: 'PHP ${task.budget.toStringAsFixed(0)}',
-                              tone: AppStatusTone.warning,
-                            ),
-                          ),
-                        ),
-                      )
+                          )
                     else
                       ...availableNow.map(
                         (profile) => AppContentCard(
                           margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                          onTap: () =>
-                              context.push('/services/freelancer/${profile.id}'),
+                          onTap: () => context
+                              .push('/services/freelancer/${profile.id}'),
                           child: ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: AppAvatar(label: profile.displayName),
@@ -281,12 +287,14 @@ class HomeScreen extends ConsumerWidget {
                         children: <Widget>[
                           Expanded(
                             child: AppPrimaryActionButton(
-                              label: isFreelancer ? 'Accept Tasks' : 'Post Errand',
+                              label:
+                                  isFreelancer ? 'Accept Tasks' : 'Post Errand',
                               icon: isFreelancer
                                   ? Icons.task_alt_rounded
                                   : Icons.add_task_rounded,
                               onPressed: () {
-                                if (!isFreelancer && authState.role == Role.guest) {
+                                if (!isFreelancer &&
+                                    authState.role == Role.guest) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text('Sign in to post errands.'),
@@ -301,12 +309,14 @@ class HomeScreen extends ConsumerWidget {
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: AppSecondaryActionButton(
-                              label: isFreelancer ? 'Client Chats' : 'Browse Tasks',
+                              label: isFreelancer
+                                  ? 'Client Chats'
+                                  : 'Browse Tasks',
                               icon: isFreelancer
                                   ? Icons.chat_bubble_outline_rounded
                                   : Icons.local_shipping_outlined,
-                              onPressed: () =>
-                                  context.go(isFreelancer ? '/app/3' : '/app/2'),
+                              onPressed: () => context
+                                  .go(isFreelancer ? '/app/3' : '/app/2'),
                             ),
                           ),
                         ],
