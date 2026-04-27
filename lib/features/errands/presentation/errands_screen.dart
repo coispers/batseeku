@@ -139,7 +139,16 @@ class _ErrandsScreenState extends ConsumerState<ErrandsScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
     final role = authState.role;
+    final bool isFreelancer = role == Role.freelancer;
     final bool canPost = canPostErrands(role);
+    final String myName = authState.user?.name ?? '';
+    final List<ErrandTask> myPosted = errands
+        .where((task) => myName.isNotEmpty && task.postedBy == myName)
+        .toList();
+    final List<ErrandTask> openNearby =
+        errands.where((task) => task.status == ErrandStatus.open).toList();
+    final List<ErrandTask> accepted =
+        errands.where((task) => task.status == ErrandStatus.accepted).toList();
 
     if (role == Role.guest) {
       return ListView(
@@ -165,8 +174,11 @@ class _ErrandsScreenState extends ConsumerState<ErrandsScreen> {
             children: <Widget>[
               AppReveal(
                 child: AppSectionHeader(
-                  title: 'Errands',
-                  subtitle: 'Post tasks or accept nearby campus errands.',
+                  title:
+                      isFreelancer ? 'Freelancer Job Board' : 'Errand Requests',
+                  subtitle: isFreelancer
+                      ? 'Accept nearby tasks and track active deliveries.'
+                      : 'Post tasks and monitor responses from runners.',
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -174,14 +186,130 @@ class _ErrandsScreenState extends ConsumerState<ErrandsScreen> {
                 delay: const Duration(milliseconds: 80),
                 child: SizedBox(
                   width: double.infinity,
-                  child: AppPrimaryActionButton(
-                    label: 'Post Errand',
-                    icon: Icons.add_rounded,
-                    onPressed: canPost ? _openPostErrandDialog : null,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: AppPrimaryActionButton(
+                          label: isFreelancer ? 'Open Tasks' : 'Post Errand',
+                          icon: isFreelancer
+                              ? Icons.task_alt_rounded
+                              : Icons.add_rounded,
+                          onPressed: isFreelancer
+                              ? () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Task board refreshed.'),
+                                    ),
+                                  );
+                                }
+                              : (canPost ? _openPostErrandDialog : null),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: AppSecondaryActionButton(
+                          label:
+                              isFreelancer ? 'My Active Jobs' : 'Browse Board',
+                          icon: isFreelancer
+                              ? Icons.local_shipping_rounded
+                              : Icons.search_rounded,
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  isFreelancer
+                                      ? '${accepted.length} active job(s) right now.'
+                                      : '${openNearby.length} open errand(s) on board.',
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
+              AppReveal(
+                delay: const Duration(milliseconds: 105),
+                child: AppContentCard(
+                  tone: isFreelancer ? AppCardTone.success : AppCardTone.accent,
+                  child: Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
+                    children: <Widget>[
+                      AppStatusBadge(
+                        label: isFreelancer
+                            ? '${openNearby.length} open nearby'
+                            : '${myPosted.length} posted by you',
+                        tone: isFreelancer
+                            ? AppStatusTone.success
+                            : AppStatusTone.accent,
+                        icon: isFreelancer
+                            ? Icons.place_outlined
+                            : Icons.post_add_rounded,
+                      ),
+                      AppStatusBadge(
+                        label: isFreelancer
+                            ? '${accepted.length} accepted'
+                            : '${openNearby.length} board open',
+                        tone: AppStatusTone.info,
+                        icon: isFreelancer
+                            ? Icons.assignment_turned_in_outlined
+                            : Icons.public_rounded,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              AppReveal(
+                delay: const Duration(milliseconds: 120),
+                child: AppSectionHeader(
+                  title: isFreelancer ? 'Tasks To Accept' : 'Your Posted Tasks',
+                  subtitle: isFreelancer
+                      ? 'Highest-value errands currently open around campus.'
+                      : 'Track what you posted before checking the full board.',
+                  compact: true,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              if (!isFreelancer && myPosted.isEmpty)
+                const EmptyStateBlock(
+                  title: 'No errands posted yet',
+                  message: 'Post your first errand to request quick help.',
+                  icon: Icons.post_add_outlined,
+                ),
+              if (!isFreelancer)
+                ...myPosted.map(
+                  (task) => AppContentCard(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    tone: AppCardTone.accent,
+                    child: _ErrandTile(task: task, role: role),
+                  ),
+                ),
+              if (isFreelancer && openNearby.isEmpty)
+                const EmptyStateBlock(
+                  title: 'No open errands to accept',
+                  message: 'Wait for new posts from students.',
+                  icon: Icons.hourglass_empty_rounded,
+                ),
+              if (isFreelancer)
+                ...openNearby.map(
+                  (task) => AppContentCard(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    tone: AppCardTone.success,
+                    child: _ErrandTile(task: task, role: role),
+                  ),
+                ),
+              const SizedBox(height: AppSpacing.md),
+              const AppSectionHeader(
+                title: 'Full Board',
+                subtitle: 'All errands and their current status.',
+                compact: true,
+              ),
+              const SizedBox(height: AppSpacing.sm),
               if (errands.isEmpty)
                 const EmptyStateBlock(
                   title: 'No errands available',
@@ -193,72 +321,85 @@ class _ErrandsScreenState extends ConsumerState<ErrandsScreen> {
                   delay: const Duration(milliseconds: 130),
                   child: AppContentCard(
                     margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Text(
-                                task.title,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.w800),
-                              ),
-                            ),
-                            AppStatusBadge(
-                              label: _statusLabel(task.status),
-                              tone: _statusTone(task.status),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(task.description),
-                        const SizedBox(height: AppSpacing.sm),
-                        Wrap(
-                          spacing: AppSpacing.sm,
-                          runSpacing: AppSpacing.sm,
-                          children: <Widget>[
-                            AppStatusBadge(
-                              label: 'PHP ${task.budget.toStringAsFixed(0)}',
-                              tone: AppStatusTone.info,
-                              icon: Icons.payments_outlined,
-                            ),
-                            AppStatusBadge(
-                              label:
-                                  '${task.distanceKm.toStringAsFixed(1)} km away',
-                              tone: AppStatusTone.neutral,
-                              icon: Icons.place_outlined,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          'Posted by ${task.postedBy}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: AppPrimaryActionButton(
-                            label:
-                                role == Role.freelancer ? 'Accept' : 'Request',
-                            onPressed: () {
-                              final String action = role == Role.freelancer
-                                  ? 'Errand accepted (mock).'
-                                  : 'Request sent (mock).';
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(action)));
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: _ErrandTile(task: task, role: role),
                   ),
                 ),
               ),
             ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ErrandTile extends StatelessWidget {
+  const _ErrandTile({
+    required this.task,
+    required this.role,
+  });
+
+  final ErrandTask task;
+  final Role role;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                task.title,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w800),
+              ),
+            ),
+            AppStatusBadge(
+              label: _statusLabel(task.status),
+              tone: _statusTone(task.status),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(task.description),
+        const SizedBox(height: AppSpacing.sm),
+        Wrap(
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.sm,
+          children: <Widget>[
+            AppStatusBadge(
+              label: 'PHP ${task.budget.toStringAsFixed(0)}',
+              tone: AppStatusTone.info,
+              icon: Icons.payments_outlined,
+            ),
+            AppStatusBadge(
+              label: '${task.distanceKm.toStringAsFixed(1)} km away',
+              tone: AppStatusTone.neutral,
+              icon: Icons.place_outlined,
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          'Posted by ${task.postedBy}',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Align(
+          alignment: Alignment.centerRight,
+          child: AppPrimaryActionButton(
+            label: role == Role.freelancer ? 'Accept' : 'Request',
+            onPressed: () {
+              final String action = role == Role.freelancer
+                  ? 'Errand accepted (mock).'
+                  : 'Request sent (mock).';
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(action)));
+            },
           ),
         ),
       ],
